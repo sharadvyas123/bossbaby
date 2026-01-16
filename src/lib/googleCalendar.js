@@ -15,12 +15,7 @@ function create30MinSlot(date, timeSlot) {
 
 // 🔹 Auth
 const auth = new google.auth.GoogleAuth({
-  credentials: JSON.parse(
-    fs.readFileSync(
-      path.join(process.cwd(), "google-calendar-key.json"),
-      "utf8"
-    )
-  ),
+  credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY),
   scopes: ["https://www.googleapis.com/auth/calendar"],
 });
 
