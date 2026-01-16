@@ -1,6 +1,4 @@
 import { google } from "googleapis";
-import fs from "fs";
-import path from "path";
 
 // 🔹 Create 30 min slot
 function create30MinSlot(date, timeSlot) {
@@ -13,9 +11,13 @@ function create30MinSlot(date, timeSlot) {
   };
 }
 
-// 🔹 Auth
+// 🔹 GOOGLE AUTH (VERCEL SAFE)
+const credentials = JSON.parse(
+  process.env.GOOGLE_SERVICE_ACCOUNT_KEY.replace(/\\n/g, "\n")
+);
+
 const auth = new google.auth.GoogleAuth({
-  credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY),
+  credentials,
   scopes: ["https://www.googleapis.com/auth/calendar"],
 });
 
@@ -24,16 +26,15 @@ const calendar = google.calendar({
   auth,
 });
 
-// 🔹 MAIN FUNCTION (FIXED)
+// 🔹 MAIN FUNCTION
 export async function addEventToCalendar(booking) {
-  // ✅ Generate correct times
   const { startTime, endTime } = create30MinSlot(
     booking.date,
     booking.timeSlot
   );
 
   return await calendar.events.insert({
-    calendarId: "vyasshubham132@gmail.com",
+    calendarId: "primary", // ✅ Best practice
     requestBody: {
       summary: "📸 Boss Baby Photo Shoot",
       description: `Client: ${booking.babyName || "N/A"}
