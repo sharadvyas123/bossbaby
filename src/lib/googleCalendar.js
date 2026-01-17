@@ -12,15 +12,15 @@ function create30MinSlot(date, timeSlot) {
 }
 
 // 🔹 GOOGLE AUTH (VERCEL SAFE)
-
+const credentials = JSON.parse(
+  Buffer.from(
+    process.env.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64,
+    "base64"
+  ).toString("utf8")
+);
 
 const auth = new google.auth.GoogleAuth({
-  credentials:{
-    type:"service_account",
-    project_id: process.env.GOOGLE_PROJECT_ID,
-    client_email: process.env.GOOGLE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-  },
+  credentials,
   scopes: ["https://www.googleapis.com/auth/calendar"],
 });
 
