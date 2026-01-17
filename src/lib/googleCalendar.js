@@ -11,6 +11,7 @@ function create30MinSlot(date, timeSlot) {
   };
 }
 
+
 // 🔹 GOOGLE AUTH (VERCEL SAFE)
 const credentials = JSON.parse(
   Buffer.from(
@@ -18,6 +19,11 @@ const credentials = JSON.parse(
     "base64"
   ).toString("utf8")
 );
+
+console.log(
+  credentials
+);
+
 
 const auth = new google.auth.GoogleAuth({
   credentials,
@@ -37,7 +43,7 @@ export async function addEventToCalendar(booking) {
   );
 
   return await calendar.events.insert({
-    calendarId: "primary", // ✅ Best practice
+    calendarId: "vyasshubham132@gmail.com", // ✅ Best practice
     requestBody: {
       summary: "📸 Boss Baby Photo Shoot",
       description: `Client: ${booking.babyName || "N/A"}
