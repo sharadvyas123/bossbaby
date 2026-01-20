@@ -2,6 +2,12 @@ import mongoose from 'mongoose';
 
 const BookingSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     babyName: {
       type: String,
       required: [true, 'Baby name is required'],

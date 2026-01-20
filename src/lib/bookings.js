@@ -3,10 +3,11 @@ import connectDB from './mongodb';
 import Booking from '@/models/Booking';
 import User from '@/models/User';
 
-export async function getAllBookings() {
+export async function getAllBookings(userId) {
   try {
     await connectDB();
-    const bookings = await Booking.find({}).sort({ createdAt: -1 });
+    console.log("USER ID RECEIVED:", userId);
+    const bookings = await Booking.find({ userId }).sort({ createdAt: -1 });
     // Convert MongoDB documents to plain objects with id field
     return bookings.map(booking => ({
       id: booking._id.toString(),
