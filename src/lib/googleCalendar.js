@@ -3,7 +3,11 @@ import fs from "fs";
 import path from "path";
 // 🔹 Create 30 min slot
 function create30MinSlot(date, timeSlot) {
-  const start = new Date(`${date}T${timeSlot}:00`);
+  // date = "2026-01-17"
+  // timeSlot = "11:30"
+
+
+  const start = new Date(`${date}T${timeSlot}:00+05:30`);
   const end = new Date(start.getTime() + 30 * 60 * 1000);
 
   return {
@@ -11,6 +15,8 @@ function create30MinSlot(date, timeSlot) {
     endTime: end.toISOString(),
   };
 }
+
+
 
 
 // 🔹 GOOGLE AUTH (VERCEL SAFE)
@@ -39,6 +45,11 @@ export async function addEventToCalendar(booking) {
     booking.date,
     booking.timeSlot
   );
+  console.log(booking.date);
+  console.log(booking.timeSlot);
+  console.log("START:", startTime);
+  console.log("END:", endTime);
+
 
   return await calendar.events.insert({
     calendarId: "vyasshubham132@gmail.com", // primary if not working !! 
