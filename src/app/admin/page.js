@@ -87,6 +87,11 @@ export default function AdminPage() {
     }
   };
 
+  const toMinutes = (t) => {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  };
+
   const handleCloseStudio = async (e) => {
     e.preventDefault();
 
@@ -95,7 +100,7 @@ export default function AdminPage() {
       return;
     }
 
-    if (startTime >= endTime) {
+    if (toMinutes(startTime) >= toMinutes(endTime)) {
       setError('Start time must be before end time');
       return;
     }
@@ -219,9 +224,12 @@ export default function AdminPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-2xl font-bold mb-4">Close Studio</h2>
           <form onSubmit={handleCloseStudio} className="grid md:grid-cols-4 gap-4">
-            <input type="date" value={closureDate} onChange={(e) => setClosureDate(e.target.value)} required className="border px-3 py-2 rounded-lg" />
-            <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} required className="border px-3 py-2 rounded-lg" />
-            <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required className="border px-3 py-2 rounded-lg" />
+            <input type="date" value={closureDate} onChange={(e) => {
+              setClosureDate(e.target.value);
+              e.target.blur();
+            }} required className="border px-3 py-2 rounded-lg" />
+            <input type="time" step="900" value={startTime || ""} onChange={(e) => setStartTime(e.target.value)} required className="border px-3 py-2 rounded-lg" />
+            <input type="time" step="900" value={endTime || ""} onChange={(e) => setEndTime(e.target.value)} required className="border px-3 py-2 rounded-lg" />
             <input type="text" placeholder="Reason" value={reason} onChange={(e) => setReason(e.target.value)} className="border px-3 py-2 rounded-lg" />
             <button disabled={closing} className="bg-red-600 text-white px-6 py-2 rounded-lg">
               {closing ? 'Closing...' : 'Close Studio'}
