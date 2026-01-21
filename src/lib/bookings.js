@@ -25,6 +25,32 @@ export async function getAllBookings(userId) {
   }
 }
 
+export async function getAllBookingsForAdmin() {
+  try {
+    await connectDB();
+    console.log("ADMIN: Fetching all bookings");
+
+    const bookings = await Booking.find({})
+      .sort({ createdAt: -1 });
+
+    return bookings.map(booking => ({
+      id: booking._id.toString(),
+      babyName: booking.babyName,
+      babyAge: booking.babyAge,
+      mobileNo: booking.mobileNo,
+      photoType: booking.photoType,
+      date: booking.date,
+      timeSlot: booking.timeSlot,
+      userId: booking.userId, // useful for admin
+      createdAt: booking.createdAt?.toISOString() || new Date().toISOString(),
+    }));
+  } catch (error) {
+    console.error("Error fetching admin bookings:", error);
+    throw error;
+  }
+}
+
+
 export async function getBookingsByDate(date) {
   try {
     await connectDB();

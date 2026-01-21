@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from 'next/server';
 import {
   getAllBookings,
+  getAllBookingsForAdmin,
   getBookingsByDate,
   createBooking,
 } from '@/lib/bookings';
@@ -28,7 +29,7 @@ export async function GET(request) {
       return NextResponse.json({ bookings });
     }
 
-    const allBookings = await getAllBookings();
+    const allBookings = await getAllBookingsForAdmin();
     return NextResponse.json({ bookings: allBookings });
   } catch (error) {
     console.error('Error in GET /api/bookings:', error);
