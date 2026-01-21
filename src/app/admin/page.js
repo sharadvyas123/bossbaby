@@ -20,7 +20,7 @@ export default function AdminPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState(null);
 
-  const ADMIN_PASSWORD = 'admin123';
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
   useEffect(() => {
     const authStatus = sessionStorage.getItem('adminAuth');

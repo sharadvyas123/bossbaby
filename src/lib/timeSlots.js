@@ -1,60 +1,66 @@
-import { format, addMinutes, parse } from 'date-fns';
+import { addMinutes, parse } from 'date-fns';
 
-// Studio hours: 10:30 AM - 1:00 PM and 2:30 PM - 8:00 PM
-// Each booking lasts 45 minutes
-
+// Each booking lasts 30 minutes (as per your logic)
 
 export function generateTimeSlots(date, bookings, closures = []) {
   const slots = [];
   const baseDate = new Date(date);
 
-  // example: 10:00 – 20:00
-  let current = parse('10:00', 'HH:mm', baseDate);
-  const end = parse('20:00', 'HH:mm', baseDate);
+  // 🕒 Define sessions
+  const sessions = [
+    { start: '10:30', end: '13:00', session: 'Morning' },
+    { start: '14:30', end: '20:00', session: 'Afternoon' },
+  ];
 
-  while (current < end) {
-    const slotEnd = addMinutes(current, 30);
-    const value = current.toTimeString().slice(0, 5);
+  sessions.forEach(({ start, end }) => {
+    let current = parse(start, 'HH:mm', baseDate);
+    const sessionEnd = parse(end, 'HH:mm', baseDate);
 
-    let disabled = false;
-    let reason = '';
+    while (current < sessionEnd) {
+      const slotEnd = addMinutes(current, 30);
+      const value = current.toTimeString().slice(0, 5);
 
-    /* 🔴 Booked slots */
-    const isBooked = bookings.some(b => {
-      const bookedStart = parse(b.timeSlot, 'HH:mm', baseDate);
-      const bookedEnd = addMinutes(bookedStart, 30);
-      return current < bookedEnd && slotEnd > bookedStart;
-    });
+      let disabled = false;
+      let reason = '';
 
-    if (isBooked) {
-      disabled = true;
-      reason = 'Booked';
+      /* 🔴 Booked slots */
+      const isBooked = bookings.some(b => {
+        const bookedStart = parse(b.timeSlot, 'HH:mm', baseDate);
+        const bookedEnd = addMinutes(bookedStart, 30);
+        return current < bookedEnd && slotEnd > bookedStart;
+      });
+
+      if (isBooked) {
+        disabled = true;
+        reason = 'Booked';
+      }
+
+      /* 🔴 Closed slots */
+      const isClosed = closures.some(c => {
+        const closeStart = parse(c.startTime, 'HH:mm', baseDate);
+        const closeEnd = parse(c.endTime, 'HH:mm', baseDate);
+        return current < closeEnd && slotEnd > closeStart;
+      });
+
+      if (isClosed) {
+        disabled = true;
+        reason = 'Closed';
+      }
+
+      slots.push({
+        value,
+        label: value,
+        disabled,
+        reason,
+      });
+
+      current = slotEnd;
     }
-
-    /* 🔴 Closed slots */
-    const isClosed = closures.some(c => {
-      const closeStart = parse(c.startTime, 'HH:mm', baseDate);
-      const closeEnd = parse(c.endTime, 'HH:mm', baseDate);
-      return current < closeEnd && slotEnd > closeStart;
-    });
-
-    if (isClosed) {
-      disabled = true;
-      reason = 'Closed';
-    }
-
-    slots.push({
-      value,
-      label: `${value}`,
-      disabled,
-      reason,
-    });
-
-    current = slotEnd;
-  }
+  });
 
   return slots;
 }
+
 
 
 export function isDateValid(date) {
