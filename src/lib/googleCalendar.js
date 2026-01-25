@@ -1,12 +1,13 @@
 import { google } from "googleapis";
-import fs from "fs";
-import path from "path";
-// 🔹 Create 30 min slot
+
+/* =========================
+   CREATE 30 MIN SLOT
+========================= */
 function create30MinSlot(date, timeSlot) {
   // date = "2026-01-17"
   // timeSlot = "11:30"
 
-
+  // Force IST (+05:30)
   const start = new Date(`${date}T${timeSlot}:00+05:30`);
   const end = new Date(start.getTime() + 30 * 60 * 1000);
 
@@ -16,18 +17,12 @@ function create30MinSlot(date, timeSlot) {
   };
 }
 
-
-
-
-// 🔹 GOOGLE AUTH (VERCEL SAFE)
+/* =========================
+   GOOGLE AUTH (VERCEL SAFE)
+========================= */
 const credentials = JSON.parse(
   process.env.GOOGLE_SERVICE_ACCOUNT_KEY
 );
-
-console.log(
-  credentials
-);
-
 
 const auth = new google.auth.GoogleAuth({
   credentials,
@@ -39,20 +34,22 @@ const calendar = google.calendar({
   auth,
 });
 
-// 🔹 MAIN FUNCTION
+/* =========================
+   ADD EVENT TO CALENDAR
+========================= */
 export async function addEventToCalendar(booking) {
   const { startTime, endTime } = create30MinSlot(
     booking.date,
     booking.timeSlot
   );
-  console.log(booking.date);
-  console.log(booking.timeSlot);
+
+  console.log("BOOKING DATE:", booking.date);
+  console.log("BOOKING SLOT:", booking.timeSlot);
   console.log("START:", startTime);
   console.log("END:", endTime);
 
-
   return await calendar.events.insert({
-    calendarId: "vyasshubham132@gmail.com", // primary if not working !! 
+    calendarId: "vyasshubham132@gmail.com", // use 'primary' if needed
     requestBody: {
       summary: "📸 Boss Baby Photo Shoot",
       description: `Client: ${booking.babyName || "N/A"}
@@ -68,4 +65,25 @@ Mobile: ${booking.mobileNo || "N/A"}`,
       },
     },
   });
+}
+
+/* =========================
+   REMOVE EVENT FROM CALENDAR
+========================= */
+export async function removeEventFromCalendar(eventId) {
+  if (!eventId) return;
+
+  try {
+    await calendar.events.delete({
+      calendarId: "vyasshubham132@gmail.com", // same calendar
+      eventId,
+    });
+
+    console.log("Calendar event deleted:", eventId);
+  } catch (error) {
+    console.error(
+      "Failed to delete calendar event:",
+      error.message
+    );
+  }
 }

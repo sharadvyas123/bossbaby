@@ -15,13 +15,13 @@ export default function AdminPage() {
   const [endTime, setEndTime] = useState('');
   const [reason, setReason] = useState('');
   const [closing, setClosing] = useState(false);
-
+  
+  const ADMIN_PASSWORD = "admin123";
   /* 🔥 Calendar Sync State */
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState(null);
 
-  const ADMIN_PASSWORD = "admin123";
-
+  
   useEffect(() => {
     const authStatus = sessionStorage.getItem('adminAuth');
     if (authStatus === 'true') {
@@ -31,9 +31,11 @@ export default function AdminPage() {
       setLoading(false);
     }
   }, []);
-
+  
   const handleLogin = (e) => {
     e.preventDefault();
+    console.log("admin password : " , ADMIN_PASSWORD);
+    console.log("Entered password : " , password);
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       sessionStorage.setItem('adminAuth', 'true');

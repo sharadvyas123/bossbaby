@@ -39,14 +39,13 @@ export async function GET(request) {
     );
   }
 }
-
 /* =========================
    CREATE BOOKING
 ========================= */
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { userId } = body;
+    const { userId, mobile } = body;
 
     /* 🔐 AUTH CHECK */
     if (!userId) {
@@ -56,21 +55,20 @@ export async function POST(request) {
       );
     }
 
-    await connectDB();
-
-    /* 🔥 FETCH MOBILE */
-    const user = await User.findById(userId).select('mobile');
-    if (!user || !user.mobile) {
+    /* 📱 MOBILE CHECK */
+    if (!mobile) {
       return NextResponse.json(
-        { error: 'User mobile number not found' },
+        { error: 'Mobile number is required' },
         { status: 400 }
       );
     }
 
+    await connectDB();
+
     /* 🔐 ENRICH BODY */
     const enrichedBody = {
       ...body,
-      mobileNo: user.mobile,
+      mobileNo: mobile,
     };
 
     /* ✅ VALIDATION */
@@ -108,7 +106,6 @@ export async function POST(request) {
     const hasConflict = existingBookings.some((booking) => {
       const start = parse(booking.timeSlot, 'HH:mm', selectedDate);
       const end = addMinutes(start, 30);
-
       return bookingStart < end && bookingEnd > start;
     });
 
@@ -176,8 +173,7 @@ export async function POST(request) {
     });
 
     const res = await addEventToCalendar(booking);
-    booking.calendarSynced = true;
-    booking.calendarEventId = res.data.id;
+
     await Booking.findByIdAndUpdate(
       booking._id,
       {

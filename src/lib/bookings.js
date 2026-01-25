@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from './mongodb';
 import Booking from '@/models/Booking';
 import User from '@/models/User';
+import { removeEventFromCalendar } from './googleCalendar';
 
 export async function getAllBookings(userId) {
   try {
@@ -97,7 +98,20 @@ export async function createBooking(bookingData) {
 export async function deleteBooking(id) {
   try {
     await connectDB();
+
+    const booking = await Booking.findById(id);
+    if (!booking) {
+      return false;
+    }
+
+    /* 🗓️ REMOVE FROM GOOGLE CALENDAR */
+    if (booking.calendarEventId) {
+      await removeEventFromCalendar(booking.calendarEventId);
+    }
+
+    /* ❌ DELETE FROM DB */
     const result = await Booking.findByIdAndDelete(id);
+
     return !!result;
   } catch (error) {
     console.error('Error deleting booking:', error);

@@ -16,11 +16,15 @@ export const bookingSchema = yup.object().shape({
   photoType: yup
     .string()
     .required('Photo type is required')
-    .oneOf(['newborn', 'toddler', 'family', 'Maternity' , 'Baby & family'], 'Please select a valid photo type'),
+    .oneOf(['newborn', 'toddler', 'family', 'Maternity', 'Baby & family'], 'Please select a valid photo type'),
   date: yup
     .string()
     .required('Date is required'),
   timeSlot: yup
     .string()
     .required('Time slot is required'),
+  mobile: yup
+    .string()
+    .required('Mobile number is required')
+    .matches(/^[1-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
 });
